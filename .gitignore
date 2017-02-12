@@ -1,2 +1,17 @@
 # IDE
 ./idea
+.idea/workspace.xml
+.idea/inspectionProfiles/
+.idea/jsLibraryMappings.xml
+.idea/misc.xml
+.idea/watcherTasks.xml
+
+# Node
+node_modules/
+npm-debug.log
+
+#
+coverage/
+dist/
+
+

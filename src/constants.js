@@ -1,0 +1,2 @@
+export const ASCO_CREATE_COLLECTION = '@@redux-asco/ASCO_CREATE_COLLECTION'
+export const ASCO_DESTROY_COLLECTION = '@@redux-asco/ASCO_DESTROY_COLLECTION'
