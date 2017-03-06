@@ -1,4 +1,4 @@
 /** @module redux-asco */
 
-export * from './Collection';
+export * from './asco'
 

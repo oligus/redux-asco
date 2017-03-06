@@ -1,6 +1,6 @@
 var path = require('path');
 
-module.exports = function (config) {
+module.exports = config => {
   config.set({
     browsers: ['PhantomJS'],
     autoWatch: true,
@@ -12,7 +12,8 @@ module.exports = function (config) {
       ]
     },
     files: [
-      'tests.webpack.js'
+      'tests.webpack.js',
+      './node_modules/phantomjs-polyfill-object-assign/object-assign-polyfill.js',
     ],
     frameworks: [
       'jasmine'
@@ -23,6 +24,7 @@ module.exports = function (config) {
     reporters: ['progress', 'coverage'],
     webpack: {
       cache: true,
+      chunks: false,
       devtool: 'inline-source-map',
       module: {
         preLoaders: [
@@ -57,6 +59,9 @@ module.exports = function (config) {
           }
         ]
       }
+    },
+    webpackMiddleware: {
+      stats: 'errors-only'
     }
-  });
-};
+  })
+}
