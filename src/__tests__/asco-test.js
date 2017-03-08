@@ -1,7 +1,12 @@
 /* global describe, beforeEach, afterEach, it, xit */
 import { createStore, combineReducers, applyMiddleware } from 'redux'
 import thunk from 'redux-thunk'
-import { reducer, createCollection, destroyCollection } from '../asco'
+import {
+  reducer,
+  createCollection,
+  destroyCollection,
+  add
+} from '../asco'
 
 
 describe('Collection', () => {
@@ -58,5 +63,12 @@ describe('Collection', () => {
     expect(Object.keys(store.getState().asco.collections).length).toBe(3)
     store.dispatch(destroyCollection('testCollection2'))
     expect(Object.keys(store.getState().asco.collections).length).toBe(2)
+  })
+
+  it('should add to collections', () => {
+    const item = { name: 'Test name', number: 12345 }
+    store.dispatch(createCollection('testCollection1', 'http://markviss.dev', 'api/v1/test'))
+    store.dispatch(add('testCollection1', item))
+    expect(store.getState().asco.collections.testCollection1.collection).toEqual([item])
   })
 })
