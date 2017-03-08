@@ -1,5 +1,4 @@
-import { createAction, handleActions } from 'redux-actions'
-import imm from 'object-path-immutable'
+import { handleActions } from 'redux-actions'
 import Immutable from 'immutable'
 import { addCollection } from './state-mutations'
 
@@ -19,9 +18,16 @@ const collectionDefaults = {
   path: ''
 }
 
-export const createCollection = (name, host, path) => (dispatch, getState) => {
+export const createCollection = (name, host, path) => (dispatch) => {
   const payload = { name, host, path }
   dispatch({ type: ASCO_CREATE_COLLECTION, payload })
+}
+
+export const destroyCollection = (name) => {
+  return {
+    type: ASCO_DESTROY_COLLECTION,
+    payload: { collectionName: name }
+  }
 }
 
 export const reducer = handleActions({
@@ -31,12 +37,12 @@ export const reducer = handleActions({
     return addCollection(state, collection.toJS())
   },
 
-  [ASCO_DESTROY_COLLECTION]: (state, { payload: collectionName }) => {
-    return imm(state).set([collectionName], collectionDefaults).value()
+  [ASCO_DESTROY_COLLECTION]: (state, { payload }) => {
+    const collections = Immutable.fromJS(state).get('collections').delete(payload.collectionName)
+    return Immutable.fromJS(state).set('collections', collections).toJS()
   }
 }, {
   collections: {},
   defaultHost: '',
   defaultPath: ''
-  }
-)
+})
