@@ -1,10 +1,5 @@
 # IDE
-./idea
-.idea/workspace.xml
-.idea/inspectionProfiles/
-.idea/jsLibraryMappings.xml
-.idea/misc.xml
-.idea/watcherTasks.xml
+.idea
 
 # Node
 node_modules/
