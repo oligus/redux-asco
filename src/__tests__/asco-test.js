@@ -1,13 +1,22 @@
 /* global describe, beforeEach, afterEach, it, xit */
 import { createStore, combineReducers, applyMiddleware } from 'redux'
 import thunk from 'redux-thunk'
+import 'whatwg-fetch'
+import fetchMock from 'fetch-mock'
+
 import {
   reducer,
   createCollection,
   destroyCollection,
-  add
+  setLimit,
+  add,
+  load
 } from '../asco'
 
+import {
+  FETCH_PENDING,
+  FETCH
+} from '../constants'
 
 describe('Collection', () => {
   let store = {}
@@ -31,11 +40,14 @@ describe('Collection', () => {
     expect(Object.keys(asco.collections).length).toBe(3)
 
     expect(asco.collections.testCollection1).toEqual({
-      collection: [], order: [], filter: [], start: 0, length: 10, host: 'http://markviss.dev', path: 'api/v1/test' })
+      collection: [], order: [], filter: [], start: 0, limit: 10, count: 0,
+      host: 'http://markviss.dev', path: 'api/v1/test', pending: false })
     expect(asco.collections.testCollection2).toEqual({
-      collection: [], order: [], filter: [], start: 0, length: 10, host: 'http://markviss.dev', path: 'api/v2/test' })
+      collection: [], order: [], filter: [], start: 0, limit: 10, count: 0,
+      host: 'http://markviss.dev', path: 'api/v2/test', pending: false })
     expect(asco.collections.testCollection3).toEqual({
-      collection: [], order: [], filter: [], start: 0, length: 10, host: 'http://www.test.com', path: 'api/v6/test' })
+      collection: [], order: [], filter: [], start: 0, limit: 10, count: 0,
+      host: 'http://www.test.com', path: 'api/v6/test', pending: false })
   })
 
   it('should create new collection with default values', () => {
@@ -48,9 +60,11 @@ describe('Collection', () => {
         order: [],
         filter: [],
         start: 0,
-        length: 10,
+        limit: 10,
+        count: 0,
         host: 'http://markviss.dev',
-        path: 'api/v1/test'
+        path: 'api/v1/test',
+        pending: false
       }
     })
   })
@@ -70,5 +84,117 @@ describe('Collection', () => {
     store.dispatch(createCollection('testCollection1', 'http://markviss.dev', 'api/v1/test'))
     store.dispatch(add('testCollection1', item))
     expect(store.getState().asco.collections.testCollection1.collection).toEqual([item])
+  })
+
+  it('should set limit', () => {
+    store.dispatch(createCollection('testCollection1', 'http://markviss.dev', 'api/v1/test'))
+    store.dispatch(setLimit('testCollection1', 123))
+    expect(store.getState().asco.collections.testCollection1.limit).toEqual(123)
+  })
+
+  describe('fetch data', () => {
+
+    it('should dispatch pending action', () => {
+      store.dispatch(createCollection('testCollection1', 'http://markviss.dev', 'api/v1/test'))
+      const getState = () => (store.getState().asco)
+      const dispatch = jasmine.createSpy('Dispatch spy')
+
+      load('testCollection1')(dispatch, getState)
+        .catch(error => {})
+      expect(dispatch).toHaveBeenCalledWith({
+        type: '@@redux-asco/FETCH_PENDING', payload: Object({ collectionName: 'testCollection1', pending: true })
+      })
+    })
+
+    it('should set collection in pending mode', () => {
+      store.dispatch(createCollection('testCollection1', 'http://markviss.dev', 'api/v1/test'))
+      const state = store.getState().asco
+      expect(state.collections.testCollection1.pending).toBe(false)
+
+      const result = reducer(state, {
+        type: FETCH_PENDING,
+        payload: {
+          collectionName: 'testCollection1',
+          pending: true
+        }
+      })
+
+      expect(result.collections.testCollection1.pending).toBe(true)
+    })
+
+    xit('should set collection in pending mode', () => {
+      store.dispatch(createCollection('testCollection1', 'http://markviss.dev', 'api/v1/test'))
+      const getState = () => (store.getState().asco)
+      const dispatch = jasmine.createSpy('Dispatch spy')
+
+      const result = {
+        data: {
+          collection: [
+            { name: 'test1', age: 11 },
+            { name: 'test2', age: 22 },
+            { name: 'test3', age: 33 }
+          ],
+          start: 0,
+          limit: 10,
+          count: 3
+        }
+      }
+
+      fetchMock.post('http://markviss.dev/api/v1/test', result)
+
+      load('testCollection1')(dispatch, getState)
+        .then(data => {
+          console.log('d', data)
+        })
+
+      fetchMock.restore()
+    })
+
+    it('should reduce fetched data', () => {
+      store.dispatch(createCollection('testCollection1', 'http://markviss.dev', 'api/v1/test'))
+      const state = store.getState().asco
+      expect(state.collections.testCollection1.pending).toBe(false)
+
+      const payload = {
+        collectionName: 'testCollection1',
+        collection: [
+          { name: 'test1', age: 11 },
+          { name: 'test2', age: 22 },
+          { name: 'test3', age: 33 }
+        ],
+        start: 0,
+        limit: 10,
+        count: 3
+      }
+
+      const result = reducer(state, {
+        type: FETCH,
+        payload
+      })
+
+      //result.collections.testCollection1.pending).toBe(true)
+    })
+  })
+
+  xit('should load next batch', () => {
+    /*
+    store.dispatch(createCollection('testCollection1', 'http://markviss.dev', 'api/v1/test'))
+
+    const getState = () => (store.getState().asco)
+    const dispatch = jasmine.createSpy('Dispatch spy')
+
+    fetchMock.post('http://markviss.dev/api/v1/test', {hello: 'world'})
+
+    load('testCollection1')(dispatch, getState)
+      .then(data => {
+        console.log('d', data)
+      })
+
+    fetchMock.restore()
+
+    expect(dispatch).toHaveBeenCalledWith({ type: '@@redux-asco/FETCH_PENDING', payload: Object({ pending: true }) })
+    expect(dispatch).toHaveBeenCalledWith({ type: '@@redux-asco/FETCH', payload: Object({ pending: true }) })
+    */
+
   })
 })

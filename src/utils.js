@@ -27,35 +27,3 @@ export const empty = (mixedVariable) => {
 
   return false
 }
-
-/**
- * Fetches a value in a deep js data structure
- *
- * @param {object} obj      The object to search
- * @param {string} path     The path to find
- * @param {*} defaultValue  Default value if we can't find what we're looking for
- * @param {number} count    The current recursion count
- * @returns {*} The found value or undefined
- */
-export const deepFetch = (obj, path, defaultValue = undefined, count = 0) => {
-  const levels = path.split('.')
-
-  // The path doesn't exist in the object
-  if (levels.length === 0 || obj === undefined) {
-    return defaultValue
-  }
-
-  if (count > 10) {
-    console.warn('deepFetch error. Infinite loop detected!')
-    return defaultValue
-  }
-
-  // We found the value we were looking for
-  if (levels.length === 1) {
-    return obj[levels[0]]
-  }
-
-  // We have to go deeper
-  const firstElement = levels.shift()
-  return deepFetch(obj[firstElement], levels.join('.'), defaultValue, count + 1)
-}

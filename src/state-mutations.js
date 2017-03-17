@@ -57,6 +57,52 @@ export const hasCollection = (state, collectionName) => {
 }
 
 /**
+ *
+ * @param state
+ * @param collectionName
+ * @returns {string}
+ */
+export const getHost = (state, collectionName) => {
+  let host = ''
+
+  if (hasCollection(state, collectionName)) {
+    host = Immutable.fromJS(state)
+      .get('collections')
+      .get(collectionName)
+      .get('host')
+  }
+
+  if (empty(host)) {
+    host = Immutable.fromJS(state).get('defaultHost')
+  }
+
+  return host
+}
+
+/**
+ *
+ * @param state
+ * @param collectionName
+ * @returns {string}
+ */
+export const getPath = (state, collectionName) => {
+  let path = ''
+
+  if (hasCollection(state, collectionName)) {
+    path = Immutable.fromJS(state)
+      .get('collections')
+      .get(collectionName)
+      .get('path')
+  }
+
+  if (empty(path)) {
+    path = Immutable.fromJS(state).get('defaultPath')
+  }
+
+  return path
+}
+
+/**
  * Adds a collection to collection array *and* sets default host/api if not set
  *
  * @param state

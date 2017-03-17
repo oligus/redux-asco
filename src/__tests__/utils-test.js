@@ -20,41 +20,4 @@ describe('Utils', () => {
     expect(empty({ key: 'value' })).toBeFalsy()
   })
 
-  const magicValue = 'value'
-
-  it('deepFetch finds value one level deep', () => {
-    const obj = {
-      level1: magicValue
-    }
-
-    const value = deepFetch(obj, 'level1')
-    expect(value).toEqual(magicValue)
-  })
-
-  it('deepFetch finds value three levels deep', () => {
-    const obj = {
-      level1: {
-        level2: {
-          level3: magicValue
-        }
-      }
-    }
-
-    const value = deepFetch(obj, 'level1.level2.level3')
-    expect(value).toEqual(magicValue)
-  })
-
-  it('deepFetch returns undefined when path is wrong', () => {
-    const obj = {
-      level1: {
-        level2: {
-          level3: magicValue
-        }
-      }
-    }
-
-    const value = deepFetch(obj, 'level1.wrongPath.level3')
-    expect(value).toBeUndefined()
-  })
-
 })
