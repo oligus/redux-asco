@@ -2,24 +2,29 @@
   "name": "redux-asco",
   "version": "1.0.0",
   "description": "Redux asynchronous object collection",
-  "main": "dist/index.js",
+  "main": "lib/index.js",
+  "files": [
+    "lib",
+    "src",
+    "dist"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/oligus/redux-asco.git"
   },
   "scripts": {
+    "clean": "rimraf lib dist build",
     "build": "npm run clean && npm run build:dev && npm run build:prd",
+    "prepublish": "npm run clean && npm run test && npm run build",
     "build:dev": "webpack --config tools/webpack.config.dev.js",
     "build:prd": "webpack --config tools/webpack.config.prod.js",
     "build:demo": "webpack --config tools/webpack.config.demo.js",
-    "prepublish": "npm run build",
-    "clean": "rimraf dist build",
     "lint": "eslint src",
     "test": "jest",
     "test:watch": "jest --watch"
   },
   "keywords": [
-    "asynchrnous collection"
+    "asynchronous collection"
   ],
   "author": "Oli Gustafsson",
   "license": "GPL-2.0",

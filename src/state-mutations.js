@@ -1,4 +1,3 @@
-import imm from 'object-path-immutable'
 import Immutable from 'immutable'
 import { empty, deepFetch } from './utils'
 

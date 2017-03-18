@@ -1,7 +1,6 @@
 import { handleActions } from 'redux-actions'
 import 'whatwg-fetch'
 import Immutable from 'immutable'
-import objectPath from 'object-path'
 import objectPathImmutable from 'object-path-immutable'
 import {
   addCollection,
@@ -83,42 +82,16 @@ export const load = (collectionName) => (dispatch, getState) => {
       return response.json()
     })
     .then((response) => {
-      console.log('response2', response)
       dispatch({ type: FETCH, payload: {
-        collectionName,
+        name: collectionName,
         collection: response.data.collection,
         start: response.data.start,
         limit: response.data.limit,
-        count: response.data.count
+        count: response.data.count,
+        pending: false
       } })
     })
 }
-
-/*
-export const searchQuery = query => (dispatch, getState) => {
-  dispatch({ type: MATCHBOX_SEARCH_PENDING, payload: { isSearching: true } })
-
-  return fetch(url('matchbox/search'),
-    {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
-      },
-      body: JSON.stringify(joinStateAndQuery(getState(), query))
-    })
-    .then((response) => {
-      if (!response.ok) {
-        dispatch({ type: MATCHBOX_SEARCH_PENDING, payload: { isSearching: false } })
-        dispatch(showError('Error while searching'))
-      }
-      return response.json()
-    })
-    .then((response) => {
-      dispatch({ type: MATCHBOX_SEARCH_RESULT, payload: { isSearching: false, result: response } })
-    })
-}
-*/
 
 export const next = (collectionName) => {
   return {
@@ -164,13 +137,15 @@ export const reducer = handleActions({
   },
 
   [FETCH]: (state, { payload }) => {
-    if (!hasCollection(state, payload.collectionName)) {
+    if (!hasCollection(state, payload.name)) {
       return state
     }
 
-    const defaultMap = Immutable.fromJS(state)
-    return state
-  },
+    const defaultMap = Immutable.fromJS(state).get('collections').get(payload.name)
+    const collection = defaultMap.mergeDeep(payload)
+    const collections =  Immutable.fromJS(state).get('collections').set(payload.name, collection)
+    return Immutable.fromJS(state).set('collections', collections).toJS()
+  }
 
 
 }, {

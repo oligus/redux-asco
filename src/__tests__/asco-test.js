@@ -122,7 +122,7 @@ describe('Collection', () => {
       expect(result.collections.testCollection1.pending).toBe(true)
     })
 
-    xit('should set collection in pending mode', () => {
+    it('should set collection in pending mode', () => {
       store.dispatch(createCollection('testCollection1', 'http://markviss.dev', 'api/v1/test'))
       const getState = () => (store.getState().asco)
       const dispatch = jasmine.createSpy('Dispatch spy')
@@ -144,7 +144,7 @@ describe('Collection', () => {
 
       load('testCollection1')(dispatch, getState)
         .then(data => {
-          console.log('d', data)
+          //console.log('d', data)
         })
 
       fetchMock.restore()
@@ -152,17 +152,18 @@ describe('Collection', () => {
 
     it('should reduce fetched data', () => {
       store.dispatch(createCollection('testCollection1', 'http://markviss.dev', 'api/v1/test'))
+      store.dispatch(createCollection('testCollection2', 'http://markviss.dev', 'api/v2/test'))
       const state = store.getState().asco
       expect(state.collections.testCollection1.pending).toBe(false)
 
       const payload = {
-        collectionName: 'testCollection1',
+        name: 'testCollection1',
         collection: [
           { name: 'test1', age: 11 },
           { name: 'test2', age: 22 },
           { name: 'test3', age: 33 }
         ],
-        start: 0,
+        start: 5,
         limit: 10,
         count: 3
       }
@@ -172,7 +173,10 @@ describe('Collection', () => {
         payload
       })
 
-      //result.collections.testCollection1.pending).toBe(true)
+      expect(result.collections.testCollection1.collection).toEqual(payload.collection)
+      expect(result.collections.testCollection1.start).toEqual(5)
+      expect(result.collections.testCollection1.limit).toEqual(10)
+      expect(result.collections.testCollection1.count).toEqual(3)
     })
   })
 
