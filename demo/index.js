@@ -4,7 +4,7 @@ import { Provider } from 'react-redux'
 import { connect } from 'react-redux'
 import { createStore, combineReducers, applyMiddleware, compose } from 'redux'
 import thunk from 'redux-thunk'
-import { reducer as ascoReducer, createCollection, destroyCollection } from '../src/asco'
+import { reducer as ascoReducer, createCollection, destroyCollection } from '../lib/redux-asco'
 
 const middlewares = [thunk]
 

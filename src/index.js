@@ -1,4 +1,12 @@
 /** @module redux-asco */
 
-export * from './asco'
+export {
+  createCollection,
+  destroyCollection,
+  setLimit,
+  add,
+  load,
+  next,
+  reducer
+} from './asco'
 
