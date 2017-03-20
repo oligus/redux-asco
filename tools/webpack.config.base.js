@@ -6,9 +6,12 @@ var outputFile = libraryName + '.js';
 module.exports = {
   module: {
     loaders: [{
-      test: /\.js$/,
+      test: /\.jsx?$/,
       exclude: /(bower_components|node_modules)/,
-      loader: 'babel'
+      loader: 'babel',
+      query: {
+        presets:['react']
+      }
     }]
   },
   entry: './src/index.js',

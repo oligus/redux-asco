@@ -10,7 +10,11 @@ config.plugins = [
   })
 ];
 
-config.entry = './demo/index.js';
+config.entry = [
+  'babel-polyfill',
+  './demo/index.jsx'
+];
+
 config.output =  {
   libraryTarget: 'umd',
   library: 'redux-asco',
