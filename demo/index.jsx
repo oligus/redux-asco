@@ -4,6 +4,7 @@ import { render } from 'react-dom'
 import { Provider } from 'react-redux'
 import { createStore, combineReducers, applyMiddleware, compose } from 'redux'
 import thunk from 'redux-thunk'
+import Data from './components/data'
 import { reducer as ascoReducer, createCollection, destroyCollection } from '../lib/redux-asco'
 
 const middlewares = [thunk]
@@ -15,12 +16,12 @@ const store = createStore(
   combineReducers({ asco: ascoReducer }),
   composeEnhancers(applyMiddleware(...middlewares))
 )
-store.dispatch(createCollection('testCollection', 'http://markviss.dev/api/test'))
-store.dispatch(destroyCollection('testCollection'))
+
+store.dispatch(createCollection('testCollection', 'http://localhost:8080', 'api/collection'))
 
 ReactDOM.render(
   <Provider store={store}>
-    <div>Moo</div>
+    <Data />
   </Provider>,
   document.getElementById('app')
 )

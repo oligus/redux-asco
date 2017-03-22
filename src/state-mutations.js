@@ -75,7 +75,7 @@ export const getHost = (state, collectionName) => {
     host = Immutable.fromJS(state).get('defaultHost')
   }
 
-  return host
+  return empty(host) ? '' : host
 }
 
 /**
@@ -98,7 +98,7 @@ export const getPath = (state, collectionName) => {
     path = Immutable.fromJS(state).get('defaultPath')
   }
 
-  return path
+  return empty(path) ? '' : path
 }
 
 /**

@@ -5,9 +5,9 @@
 node_modules/
 npm-debug.log
 
-#
-coverage/
-dist/
 lib/
+demo/vendor/
+demo/composer.lock
+demo/demo.js
 
 

@@ -96,7 +96,7 @@ describe('Collection', () => {
 
     it('should dispatch pending action', () => {
       store.dispatch(createCollection('testCollection1', 'http://markviss.dev', 'api/v1/test'))
-      const getState = () => (store.getState().asco)
+      const getState = () => (store.getState())
       const dispatch = jasmine.createSpy('Dispatch spy')
 
       load('testCollection1')(dispatch, getState)
@@ -124,7 +124,7 @@ describe('Collection', () => {
 
     it('should set collection in pending mode', () => {
       store.dispatch(createCollection('testCollection1', 'http://markviss.dev', 'api/v1/test'))
-      const getState = () => (store.getState().asco)
+      const getState = () => (store.getState())
       const dispatch = jasmine.createSpy('Dispatch spy')
 
       const result = {
@@ -156,24 +156,47 @@ describe('Collection', () => {
       const state = store.getState().asco
       expect(state.collections.testCollection1.pending).toBe(false)
 
-      const payload = {
-        name: 'testCollection1',
-        collection: [
-          { name: 'test1', age: 11 },
-          { name: 'test2', age: 22 },
-          { name: 'test3', age: 33 }
-        ],
-        start: 5,
-        limit: 10,
-        count: 3
-      }
-
-      const result = reducer(state, {
+      let result = reducer(state, {
         type: FETCH,
-        payload
+        payload: {
+          name: 'testCollection1',
+          collection: [
+            { name: 'test1', age: 11 },
+            { name: 'test2', age: 22 },
+            { name: 'test3', age: 33 }
+          ]
+        }
       })
 
-      expect(result.collections.testCollection1.collection).toEqual(payload.collection)
+      expect(result.collections.testCollection1.collection).toEqual([
+        { name: 'test1', age: 11 },
+        { name: 'test2', age: 22 },
+        { name: 'test3', age: 33 }
+      ])
+      expect(result.collections.testCollection1.start).toEqual(0)
+      expect(result.collections.testCollection1.limit).toEqual(10)
+      expect(result.collections.testCollection1.count).toEqual(0)
+
+      result = reducer(state, {
+        type: FETCH,
+        payload: {
+          name: 'testCollection1',
+          collection: [
+            { name: 'test1', age: 11 },
+            { name: 'test2', age: 22 },
+            { name: 'test3', age: 33 }
+          ],
+          start: 5,
+          limit: 10,
+          count: 3
+        }
+      })
+
+      expect(result.collections.testCollection1.collection).toEqual([
+        { name: 'test1', age: 11 },
+        { name: 'test2', age: 22 },
+        { name: 'test3', age: 33 }
+      ],)
       expect(result.collections.testCollection1.start).toEqual(5)
       expect(result.collections.testCollection1.limit).toEqual(10)
       expect(result.collections.testCollection1.count).toEqual(3)

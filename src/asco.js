@@ -1,5 +1,6 @@
 import { handleActions } from 'redux-actions'
 import 'whatwg-fetch'
+import { empty } from './utils'
 import Immutable from 'immutable'
 import objectPathImmutable from 'object-path-immutable'
 import {
@@ -61,8 +62,8 @@ export const add = (collectionName, item) => {
 export const load = (collectionName) => (dispatch, getState) => {
   dispatch({ type: FETCH_PENDING, payload: { collectionName, pending: true } })
 
-  const path = getPath(getState(), collectionName)
-  const host = getHost(getState(), collectionName)
+  const path = getPath(getState().asco, collectionName)
+  const host = getHost(getState().asco, collectionName)
   const url = `${host}/${path}`
 
   return fetch(url,
@@ -85,9 +86,9 @@ export const load = (collectionName) => (dispatch, getState) => {
       dispatch({ type: FETCH, payload: {
         name: collectionName,
         collection: response.data.collection,
-        start: response.data.start,
-        limit: response.data.limit,
-        count: response.data.count,
+        start: empty(response.data.start) ? 0 : response.data.start,
+        limit: empty(response.data.limit) ? 10 : response.data.limit,
+        count: empty(response.data.count) ? response.data.collection.length : response.data.count,
         pending: false
       } })
     })

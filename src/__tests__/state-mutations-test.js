@@ -47,8 +47,20 @@ describe('State mutations', () => {
       path: '/api/v1'
     }
 
-    const newState = addCollection(state, collection)
+    let newState = addCollection(state, {
+      name: 'myCollection',
+      host: 'http://localhost.dev:8080',
+      path: '/api/v1'
+    })
+
     expect(getHost(newState, 'myCollection')).toEqual('http://localhost.dev:8080')
+
+    newState = addCollection(state, {
+      name: 'myCollection'
+    })
+
+    expect(getHost(newState, 'myCollection')).toEqual('')
+
   })
 
   it('should return path', () => {
@@ -56,20 +68,19 @@ describe('State mutations', () => {
     expect(getPath({ collections: {}, defaultHost: '', defaultPath: '' }, 'myCollection')).toEqual('')
     expect(getPath({ collections: {}, defaultHost: '', defaultPath: 'testPath' }, 'myCollection')).toEqual('testPath')
 
-    const collection = {
+    let newState = addCollection(state, {
       name: 'myCollection',
-      collection: [],
-      order: [],
-      filter: [],
-      start: 0,
-      length: 10,
-      count: 0,
       host: 'http://localhost.dev:8080',
       path: '/api/v1'
-    }
-
-    const newState = addCollection(state, collection)
+    })
     expect(getPath(newState, 'myCollection')).toEqual('/api/v1')
+
+    newState = addCollection(state, {
+      name: 'myCollection',
+      host: 'http://localhost.dev:8080',
+    })
+
+    expect(getPath(newState, 'myCollection')).toEqual('')
   })
 
   it('should check if collection exists or not', () => {

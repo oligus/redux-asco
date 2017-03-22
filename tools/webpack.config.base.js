@@ -8,9 +8,12 @@ module.exports = {
     loaders: [{
       test: /\.jsx?$/,
       exclude: /(bower_components|node_modules)/,
-      loader: 'babel',
-      query: {
-        presets:['react']
+      loaders: ['babel-loader'],
+      use: {
+        loader: 'babel-loader',
+        options: {
+          presets: ['es2015']
+        }
       }
     }]
   },
@@ -25,7 +28,8 @@ module.exports = {
   resolve: {
     extensions: [
       '',
-      '.js'
+      '.js',
+      '.jsx'
     ]
   }
 };
