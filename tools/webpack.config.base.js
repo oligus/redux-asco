@@ -8,13 +8,7 @@ module.exports = {
     loaders: [{
       test: /\.jsx?$/,
       exclude: /(bower_components|node_modules)/,
-      loaders: ['babel-loader'],
-      use: {
-        loader: 'babel-loader',
-        options: {
-          presets: ['es2015']
-        }
-      }
+      loaders: ['babel-loader']
     }]
   },
   entry: './src/index.js',
