@@ -6,7 +6,6 @@ class HeaderComponent extends Component {
 
   handleLoad = () => {
     this.props.load('testCollection')
-    console.log("load")
   }
 
   render() {
