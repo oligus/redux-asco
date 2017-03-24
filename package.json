@@ -17,7 +17,7 @@
     "build": "npm run clean && npm run build:dev && npm run build:prd",
     "prepublish": "npm run clean && npm run test && npm run build",
     "build:dev": "webpack --config tools/webpack.config.dev.js",
-    "build:prod": "webpack --config tools/webpack.config.prod.js",
+    "build:prd": "webpack --config tools/webpack.config.prod.js",
     "build:demo": "webpack --config tools/webpack.config.demo.js",
     "lint": "eslint src",
     "test": "jest",
