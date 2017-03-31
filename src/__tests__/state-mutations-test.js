@@ -111,7 +111,7 @@ describe('State mutations', () => {
       order: [],
       filter: [],
       start: 0,
-      length: 10,
+      limit: 10,
       count: 0,
       host: 'http://localhost.dev:8080',
       path: '/api/v1'

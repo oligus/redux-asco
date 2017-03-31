@@ -9,6 +9,7 @@ import {
   getHost,
   getPath
 } from './state-mutations'
+import { getCollectionValue } from './utils'
 
 import {
   CREATE_COLLECTION,
@@ -62,9 +63,15 @@ export const add = (collectionName, item) => {
 export const load = (collectionName) => (dispatch, getState) => {
   dispatch({ type: FETCH_PENDING, payload: { collectionName, pending: true } })
 
-  const path = getPath(getState().asco, collectionName)
-  const host = getHost(getState().asco, collectionName)
+  const state = getState().asco
+  const path = getPath(state, collectionName)
+  const host = getHost(state, collectionName)
   const url = `${host}/${path}`
+
+  const body = {
+    start: getCollectionValue(state, collectionName, 'start'),
+    limit: getCollectionValue(state, collectionName, 'limit')
+  }
 
   return fetch(url,
     {
@@ -73,7 +80,7 @@ export const load = (collectionName) => (dispatch, getState) => {
         Accept: 'application/json',
         'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
       },
-      body: 'test'
+      body: JSON.stringify(body)
     })
 
     .then((response) => {
@@ -86,8 +93,6 @@ export const load = (collectionName) => (dispatch, getState) => {
       dispatch({ type: FETCH, payload: {
         name: collectionName,
         collection: response.data.collection,
-        start: empty(response.data.start) ? 0 : response.data.start,
-        limit: empty(response.data.limit) ? 10 : response.data.limit,
         count: empty(response.data.count) ? response.data.collection.length : response.data.count,
         pending: false
       } })

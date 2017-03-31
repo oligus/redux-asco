@@ -1,5 +1,6 @@
 import Immutable from 'immutable'
 import { empty, deepFetch } from './utils'
+import { getCollectionValue } from './utils'
 
 const hasHost = (imState) => (
   !empty(imState.get('defaultHost'))
@@ -62,14 +63,7 @@ export const hasCollection = (state, collectionName) => {
  * @returns {string}
  */
 export const getHost = (state, collectionName) => {
-  let host = ''
-
-  if (hasCollection(state, collectionName)) {
-    host = Immutable.fromJS(state)
-      .get('collections')
-      .get(collectionName)
-      .get('host')
-  }
+  let host = getCollectionValue(state, collectionName, 'host')
 
   if (empty(host)) {
     host = Immutable.fromJS(state).get('defaultHost')
@@ -85,14 +79,7 @@ export const getHost = (state, collectionName) => {
  * @returns {string}
  */
 export const getPath = (state, collectionName) => {
-  let path = ''
-
-  if (hasCollection(state, collectionName)) {
-    path = Immutable.fromJS(state)
-      .get('collections')
-      .get(collectionName)
-      .get('path')
-  }
+  let path = getCollectionValue(state, collectionName, 'path')
 
   if (empty(path)) {
     path = Immutable.fromJS(state).get('defaultPath')

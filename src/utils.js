@@ -1,3 +1,5 @@
+import Immutable from 'immutable'
+import { hasCollection } from './state-mutations'
 
 /**
  * Catch-all empty check, will return true on empty variable.
@@ -26,4 +28,24 @@ export const empty = (mixedVariable) => {
   }
 
   return false
+}
+
+/**
+ *
+ * @param state
+ * @param collectionName
+ * @param key
+ * @returns {string}
+ */
+export const getCollectionValue = (state, collectionName, key) => {
+  let value = ''
+
+  if (hasCollection(state, collectionName)) {
+    value = Immutable.fromJS(state)
+      .get('collections')
+      .get(collectionName)
+      .get(key)
+  }
+
+  return value
 }
