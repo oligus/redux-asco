@@ -15,8 +15,8 @@ import {
   CREATE_COLLECTION,
   DESTROY_COLLECTION,
   SET_LIMIT,
+  SET_START,
   ADD_ITEM,
-  NEXT,
   FETCH,
   FETCH_PENDING
 } from './constants'
@@ -32,6 +32,35 @@ const collectionDefaults = {
   host: '',
   path: '',
   pending: false
+}
+
+const fetchCollection = (collectionName, url, body, dispatch) => {
+  return fetch(url,
+    {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
+      },
+      body: JSON.stringify(body)
+    })
+
+    .then((response) => {
+      if (!response.ok) {
+        dispatch({ type: FETCH_PENDING, payload: { collectionName, pending: false } })
+      }
+      return response.json()
+    })
+    .then((response) => {
+      dispatch({
+        type: FETCH, payload: {
+          name: collectionName,
+          collection: response.data.collection,
+          count: empty(response.data.count) ? response.data.collection.length : response.data.count,
+          pending: false
+        }
+      })
+    })
 }
 
 export const createCollection = (name, host, path) => (dispatch) => {
@@ -73,39 +102,59 @@ export const load = (collectionName) => (dispatch, getState) => {
     limit: getCollectionValue(state, collectionName, 'limit')
   }
 
-  return fetch(url,
-    {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
-      },
-      body: JSON.stringify(body)
-    })
-
-    .then((response) => {
-      if (!response.ok) {
-        dispatch({ type: FETCH_PENDING, payload: { collectionName, pending: false } })
-      }
-      return response.json()
-    })
-    .then((response) => {
-      dispatch({ type: FETCH, payload: {
-        name: collectionName,
-        collection: response.data.collection,
-        count: empty(response.data.count) ? response.data.collection.length : response.data.count,
-        pending: false
-      } })
-    })
+  return fetchCollection(collectionName, url, body, dispatch)
 }
 
-export const next = (collectionName) => {
-  return {
-    type: NEXT,
-    payload: { collectionName }
+export const next = (collectionName) => (dispatch, getState) => {
+  dispatch({ type: FETCH_PENDING, payload: { collectionName, pending: true } })
+
+  const state = getState().asco
+  const path = getPath(state, collectionName)
+  const host = getHost(state, collectionName)
+  const url = `${host}/${path}`
+
+  let start = getCollectionValue(state, collectionName, 'start')
+  const limit = getCollectionValue(state, collectionName, 'limit')
+  const count = getCollectionValue(state, collectionName, 'count')
+
+  if (start + limit < count) {
+    start = start + limit
   }
+
+  dispatch({ type: SET_START, payload: { collectionName, start } })
+
+  const body = { start, limit }
+
+  return fetchCollection(collectionName, url, body, dispatch)
 }
 
+export const previous = (collectionName) => (dispatch, getState) => {
+  dispatch({ type: FETCH_PENDING, payload: { collectionName, pending: true } })
+
+  const state = getState().asco
+  const path = getPath(state, collectionName)
+  const host = getHost(state, collectionName)
+  const url = `${host}/${path}`
+
+  let start = getCollectionValue(state, collectionName, 'start')
+  const limit = getCollectionValue(state, collectionName, 'limit')
+
+  if (start - limit > 0) {
+    start = start - limit
+  } else {
+    start = 0
+  }
+
+  dispatch({ type: SET_START, payload: { collectionName, start } })
+
+  const body = { start, limit }
+
+  return fetchCollection(collectionName, url, body, dispatch)
+}
+
+/**
+ * Reducer
+ */
 export const reducer = handleActions({
   [CREATE_COLLECTION]: (state, { payload }) => {
     const defaultMap = Immutable.fromJS(collectionDefaults)
@@ -134,6 +183,15 @@ export const reducer = handleActions({
     return objectPathImmutable.set(state, `collections.${payload.collectionName}.limit`, payload.limit)
   },
 
+
+  [SET_START]: (state, { payload }) => {
+    if (!hasCollection(state, payload.collectionName)) {
+      return state
+    }
+
+    return objectPathImmutable.set(state, `collections.${payload.collectionName}.start`, payload.start)
+  },
+
   [FETCH_PENDING]: (state, { payload }) => {
     if (!hasCollection(state, payload.collectionName)) {
       return state
@@ -152,7 +210,6 @@ export const reducer = handleActions({
     const collections =  Immutable.fromJS(state).get('collections').set(payload.name, collection)
     return Immutable.fromJS(state).set('collections', collections).toJS()
   }
-
 
 }, {
   collections: {},

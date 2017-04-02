@@ -7,6 +7,7 @@ export {
   add,
   load,
   next,
+  previous,
   reducer
 } from './asco'
 

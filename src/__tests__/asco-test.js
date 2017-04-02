@@ -10,7 +10,9 @@ import {
   destroyCollection,
   setLimit,
   add,
-  load
+  load,
+  previous,
+  next
 } from '../asco'
 
 import {
@@ -203,25 +205,20 @@ describe('Collection', () => {
     })
   })
 
-  xit('should load next batch', () => {
-    /*
-    store.dispatch(createCollection('testCollection1', 'http://markviss.dev', 'api/v1/test'))
+  describe('get next', () => {
+    it('should dispatch pending action', () => {
+      store.dispatch(createCollection('testCollection1', 'http://markviss.dev', 'api/v1/test'))
+      const getState = () => (store.getState())
+      const dispatch = jasmine.createSpy('Dispatch spy')
 
-    const getState = () => (store.getState().asco)
-    const dispatch = jasmine.createSpy('Dispatch spy')
-
-    fetchMock.post('http://markviss.dev/api/v1/test', {hello: 'world'})
-
-    load('testCollection1')(dispatch, getState)
-      .then(data => {
-        console.log('d', data)
+      next('testCollection1')(dispatch, getState)
+        .catch(error => {})
+      expect(dispatch).toHaveBeenCalledWith({
+        type: '@@redux-asco/FETCH_PENDING', payload: Object({ collectionName: 'testCollection1', pending: true })
       })
-
-    fetchMock.restore()
-
-    expect(dispatch).toHaveBeenCalledWith({ type: '@@redux-asco/FETCH_PENDING', payload: Object({ pending: true }) })
-    expect(dispatch).toHaveBeenCalledWith({ type: '@@redux-asco/FETCH', payload: Object({ pending: true }) })
-    */
+    })
 
   })
+
+
 })
