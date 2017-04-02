@@ -1,6 +1,6 @@
 {
   "name": "redux-asco",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Redux asynchronous object collection",
   "main": "lib/index.js",
   "files": [
